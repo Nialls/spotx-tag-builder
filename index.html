@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" /> 
+        <link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon" /> 
+
+		<link href="css/bootstrap.min.css" rel="stylesheet" type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='css/tag-gen.css' rel='stylesheet' type='text/css'>
+
+		<title>SpotX Tag Generator</title>
+	</head>
+
+	<body>
+
+        <!-- BEGIN CONTAINER -->
+
+		<div class="container" ng-app="TagGen" ng-controller="TagBuilder">
+		<div class="panel panel-default">
+		<div class="panel-header">
+			<ul class="breadcrumb">
+    			<li ng-repeat="state in states | limitTo:statePos+1"><a href="#" ng-click="bcRemove($index)" ng-bind="breadcrumbs(state)"></a></li>
+    			<li class="active" ng-show="statePos > '-1'" ng-bind="finalCrumb()"></li>
+			</ul>
+		</div>
+
+		<div class="panel-body optioncontrols">
+		
+        <!-- DEVICE TYPE -->
+		
+		<div class="row text-center" ng-show="deviceType == false">
+			<div class="col-md-12">
+			<h2>What type of inventory do you have?</h2>
+				<input class="img-rounded" src="img/desktop_icon_site.png" type="image" ng-click="deviceType = 'desktop'; form.deviceType = 'desktop'; incPos(); states[statePos] = 'deviceType'" alt="desktop" height="150" width="180">
+				<input class="img-rounded" src="img/mobileweb_icon_site.png" type="image" ng-click="deviceType = 'mobileweb'; form.deviceType = 'mobile'; incPos(); states[statePos] = 'deviceType'" alt="mobile web" height="150" width="180">
+				<input class="img-rounded" src="img/mobileapp_icon_site.png" type="image" ng-click="deviceType = 'mobileapp'; form.deviceType = 'mobile'; incPos(); states[statePos] = 'deviceType'" alt="app" height="150" width="180">
+				<input class="img-rounded" src="img/ctv_icon_site.png" type="image" ng-click="deviceType = 'ctv'; paramsValid=true; callOrigin = 'serverside'; incPos(); states[statePos] = 'deviceType'" alt="ctv" height="150" width="180">
+			</div>
+		</div>
+
+
+		<!-- CONNECTED DEVICE OPTIONS -->
+
+		<div class="row text-center" ng-show="deviceType =='ctv' && platformSelect === false">
+		<h3>Which Connected Device are you using?</h3>
+			<div class="col-md-12">
+				<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); VPAID='VPI=MP4'; incPos(); states[statePos] = 'platformSelect'">
+				  <option ng-repeat="macrovar in macrovars | filter: { type: 'ctv' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				</select>
+			</div>
+		</div>
+
+		<!-- DESKTOP OPTIONS -->
+
+		<div class="row text-center" ng-show="deviceType == 'desktop' && desktopSolution == false">
+			<div class="col-md-12">
+			<h3>Do you have a player solution?</h3>
+			<div class="list-group">
+			  <a class="list-group-item" ng-click="desktopSolution = 'ovp'; paramsValid=false; incPos(); states[statePos] = 'desktopSolution'">Yes I do!</a>
+			  <a class="list-group-item" ng-click="desktopSolution = 'easi'; paramsValid=false; incPos(); states[statePos] = 'desktopSolution'">I want to use the SpotX EASI Player</a>
+			</div>
+				
+				
+				
+			</div>
+		</div>
+
+		<!-- DESKTOP - EXISTING PLAYER OPTIONS -->
+
+		<div class="row text-center" ng-show="desktopSolution == 'ovp' && desktopImplementation == false">
+			<h3>How are you trafficking SpotX?</h3>
+				<div class="col-md-12">
+        			<div class="list-group">
+        			  <a class="list-group-item" ng-click="desktopImplementation = 'direct'; paramsValid=false; incPos(); states[statePos] = 'desktopImplementation'">Directly into my player</a>
+        			  <a class="list-group-item" ng-click="desktopImplementation = 'adserver'; paramsValid=false; incPos(); states[statePos] = 'desktopImplementation'">In my ad-server</a>
+        			</div>
+				</div>
+		</div>
+
+        <div class="row text-center" ng-show="desktopImplementation !== false && VPAID === false">
+            <div class="col-md-12">
+                <h3>What version of VPAID does your player support?</h3>
+                <div class="list-group">
+                  <a class="list-group-item" ng-click="VPAID = 'VPAID=1'; paramsValid=false; incPos(); states[statePos] = 'VPAID'">VPAID 1.0 (Flash)</a>
+                  <a class="list-group-item" ng-click="VPAID = 'VPAID=js'; paramsValid=false; incPos(); states[statePos] = 'VPAID'">VPAID 2.0 (JavaScript)</a>
+                </div>
+            </div>
+        </div> 
+
+		<div class="row text-center" ng-show="desktopImplementation == 'direct' && platformSelect === false && VPAID !== false">
+			<h3>Which player are you using?</h3>
+				<div class="col-md-12">
+					<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); incPos(); states[statePos] = 'platformSelect'">
+					  <option ng-repeat="macrovar in macrovars | filter: { type: 'ovp' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  	  <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					</select>
+					
+				</div>
+		</div>
+
+		<div class="row text-center" ng-show="desktopImplementation == 'adserver' && platformSelect === false && VPAID !== false">
+			<h3>Which ad-server are you using?</h3>
+				<div class="col-md-12">
+					<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); incPos(); states[statePos] = 'platformSelect'">
+					  <option ng-repeat="macrovar in macrovars | filter: { type: 'adserver' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				      <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					</select>
+					
+				</div>
+		</div>
+
+		<!-- DESKTOP - EASI OPTIONS -->
+
+		<div class="row text-center" ng-show="desktopSolution == 'easi' && easiType == false">
+			<div class="col-md-12">
+				<h3>What sort of player do you require?</h3>
+			<div class="list-group">
+			  <a class="list-group-item" ng-click="easiType = 'incontent'; form.adUnit = 'incontent'; incPos(); states[statePos] = 'easiType'">In-content</a>
+			  <a class="list-group-item" ng-click="easiType = 'instream'; form.adUnit = 'instream'; incPos(); states[statePos] = 'easiType'">In-stream</a>
+			</div>
+			</div>
+		</div>
+
+		<!-- MOBILE WEB OPTIONS -->
+
+		<div class="row text-center" ng-show="deviceType == 'mobileweb' && mwSolution == false">
+			<div class="col-md-12">
+				<h3>What are you currently using for ad monetisation?</h3>
+			<div class="list-group">
+			  <a class="list-group-item" ng-click="mwSolution = 'ovp'; paramsValid=false; incPos(); states[statePos] = 'mwSolution'">Online Video Player only</a>
+			  <a class="list-group-item" ng-click="mwSolution = 'adserver'; paramsValid=false; incPos(); states[statePos] = 'mwSolution'">Ad-server</a>
+			  <a class="list-group-item" ng-click="mwSolution = 'easi'; paramsValid=false; incPos(); states[statePos] = 'mwSolution'">I want to use the SpotX EASI Player</a>
+			</div>
+
+			</div>
+		</div>
+
+		<!-- MOBILE WEB - EXISTING PLAYER OPTIONS -->
+
+				<div class="row text-center" ng-show="mwSolution == 'ovp' && platformSelect === false">
+			<h3>Which player are you using?</h3>
+				<div class="col-md-12">
+					<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); incPos(); states[statePos] = 'platformSelect'; VPAID = 'VPAID=JS'">
+                      <option ng-repeat="macrovar in macrovars | filter: { type: 'ovp' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  	  <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					</select>
+					
+				</div>
+		</div>
+
+		<div class="row text-center" ng-show="mwSolution == 'adserver' && platformSelect === false">
+			<h3>Which ad-server are you using?</h3>
+				<div class="col-md-12">
+					<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); incPos(); states[statePos] = 'platformSelect'; VPAID = 'VPAID=JS'">
+                      <option ng-repeat="macrovar in macrovars | filter: { type: 'adserver' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  	  <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					</select>
+					
+				</div>
+		</div>
+
+		<!-- MOBILE WEB - EASI OPTIONS -->
+
+		<div class="row text-center" ng-show="mwSolution == 'easi' && easiType == false">
+			<div class="col-md-12">
+				<h3>What sort of player do you require?</h3>
+				
+				
+
+															<div class="list-group">
+			  <a class="list-group-item" ng-click="easiType = 'incontent'; form.adUnit = 'incontent'; incPos(); states[statePos] = 'easiType'">In-content</a>
+			  <a class="list-group-item" ng-click="easiType = 'instream'; form.adUnit = 'instream'; incPos(); states[statePos] = 'easiType'">In-stream</a>
+
+			</div>
+				
+			</div>
+		</div>
+
+		<!-- MOBILE APP OPTIONS -->
+
+		<div class="row text-center" ng-show="deviceType == 'mobileapp' && maSolution == false">
+			<div class="col-md-12">
+			<h3>What are you currently using for ad monetisation?</h3>
+			<div class="list-group">
+			  <a class="list-group-item" ng-click="maSolution = 'ovp'; paramsValid=false; VPAID = 'VPAID=JS'; incPos(); states[statePos] = 'maSolution'">Online Video Player only</a>
+			  <a class="list-group-item" ng-click="maSolution = 'adserver'; paramsValid=false; incPos(); states[statePos] = 'maSolution'">Ad-server</a>
+			  <a class="list-group-item" ng-click="maSolution = 'SDK'; paramsValid=false; incPos(); states[statePos] = 'maSolution'">Nothing</a>
+			</div>
+				
+			</div>
+		</div>
+
+		<!-- MOBILE APP - EXISTING PLAYER OPTIONS -->
+
+		<div class="row text-center" ng-show="maSolution == 'adserver' && maAPI == false">
+			<div class="col-md-12">
+				<h3>Does your ad-server support VAST tags?</h3>
+			<div class="list-group">
+			  <a class="list-group-item" ng-click="maAPI = 'yes'; paramsValid=false; VPAID = 'VPAID=JS'; incPos(); states[statePos] = 'maAPI'">Yes</a>
+			  <a class="list-group-item" ng-click="maAPI = 'no'; paramsValid=false; incPos(); states[statePos] = 'maAPI'">No</a>
+			</div>
+				
+			</div>
+		</div>	
+
+		<div class="row text-center" ng-show="maAPI == 'yes' && platformSelect === false">
+			<div class="col-md-12">
+				<h3>Which ad-server are you using?</h3>
+					<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); incPos(); states[statePos] = 'platformSelect'">
+                      <option ng-repeat="macrovar in macrovars | filter: { type: 'adserver' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  	  <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					</select>
+					
+			</div>
+		</div>	
+
+		<div class="row text-center" ng-show="maAPI == 'no' && maMRAID == false && maSolution !== 'SDK'">
+			<div class="col-md-12">
+				<h3>Does your ad-server support MRAID 2.0?</h3>
+			<div class="list-group">
+			  <a class="list-group-item" ng-click="maMRAID = 'true'; platformSelect='12'; macrosearch(); incPos(); states[statePos] = 'maMRAID'">Yes</a>
+			  <a class="list-group-item" ng-click="maMRAID = 'notS'; macrosearch(); incPos(); states[statePos] = 'maMRAID'">No</a>
+			</div>
+				
+			</div>
+		</div>
+
+				<div class="row text-center" ng-show="maSolution == 'ovp' && platformSelect === false">
+			         <h3>Which player are you using?</h3>
+        				<div class="col-md-12">
+
+        					<select class="form-control" ng-model='platformSelect' ng-change="macrosearch(); incPos(); states[statePos] = 'platformSelect'">
+                              <option ng-repeat="macrovar in macrovars | filter: { type: 'ovp' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  			  <option ng-repeat="macrovar in macrovars | filter: { type: 'hybrid'}" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+				  			</select>
+        	
+        				</div>
+		        </div>
+
+                <!-- BRIGHTCOVE PLUGIN -->
+            
+                <div ng-show="macrovars[platformSelect].name == 'Brightcove'">
+                    <div class="row">
+                        <div class="text-center plugin">
+                            <h2>Use our <img style="vertical-align:text-bottom" src='img/videocloud.png' height="20%" width="20%"> plugin</h2>
+                            <h4>SpotX has partnered with Brightcove to provide an easier, more streamlined way for publishers to use the Brightcove Player. This plugin makes working with SpotX as a primary ad server quick and easy and allows our publishers to use one of the most powerful video player solutions. </h4>
+                            <a type="button" class="btn btn-default btn-lg" href="https://www.spotxknowledge.com/hc/en-us/articles/212221128-Brightcove-Plugin" target="_blank">Download our documentation</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SDK -->
+
+                <div ng-show="maSolution == 'SDK' || maMRAID == 'notS'">
+                    <div class="row">
+                        <div class="text-center plugin">
+                            <h2>Use our mobile SDK</h2>
+                            <h4>Monetise your app using our easy-to-implement SDK, or if you're already working with MoPub to help monetise your in-app inventory, use our MoPub plugin.</h4>
+                            <a type="button" class="btn btn-default btn-lg" href="https://spotxmobile.github.io/" target="_blank">Read our documentation</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TVOS SDK -->
+
+                <div ng-show="macrovars[platformSelect].name == 'AppleTV'">
+                    <div class="row">
+                        <div class="text-center plugin">
+                            <h2>Use our Apple tvOS SDK</h2>
+                            <h4>Monetise your tvOS app using our easy-to-implement SDK</h4>
+                            <a type="button" class="btn btn-default btn-lg" href="https://github.com/spotxmobile/spotx-demo-tvos" target="_blank">Read our documentation</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EASI TAG GENERATOR -->
+
+                <div ng-show="easiType !== false">
+
+                <h2 class="text-center">Place the following code onto your page</h2>
+
+					<pre class="pre-scrollable epre"><code><span ng-show="form.adUnit=='instream'">&lt;div id=&quot;{{form.contentContainerID}}&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;{{form.bannerContainerID}}&quot;&gt;&lt;/div&gt;</span><span ng-show="form.adUnit=='incontent'">&lt;p&gt;This is a paragraph of content.&lt;/p&gt;
+        </span>
+<span ng-hide="form.deviceType=='responsive'">&lt;script type=&quot;text/javascript&quot;&gt;
+    function myAdDoneFunction(spotx_ad_found)  {
+        if(spotx_ad_found)  {
+            <span ng-show="form.adUnit=='instream'">document.getElementById(&quot;spotxvideo&quot;).innerHTML = '[content to be played after ad display]';</span><span ng-show="form.adUnit=='incontent'">// code to track ad playing here</span>
+        }
+        else {
+            <span ng-show="form.adUnit=='instream'">document.getElementById(&quot;spotxvideo&quot;).innerHTML = '[backup ad request]';</span><span ng-show="form.adUnit=='incontent'">// code to place backup ad request here</span>
+        }
+    }
+&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;//search.spotxchange.com/js/spotx.js&quot;{{strAttributes}}&gt;&lt;/script&gt;</span><span  ng-show="form.deviceType=='responsive'">&lt;script type=&quot;text/javascript&quot;&gt;
+    function myAdDoneFunction(spotx_ad_found) { if(spotx_ad_found) {} else {}};
+
+    function mobileAndTabletCheck() {
+        var check = false;
+        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))check = true})(navigator.userAgent||navigator.vendor||window.opera);
+        return check;
+    }
+    var bMobile = mobileAndTabletCheck(),
+        aScriptAttributes = [&#39;type=&quot;text/javascript&quot; src=&quot;http://search.spotxchange.com/js/spotx.js&quot; {{strAttributes}}&#39;];
+    if (bMobile)
+    {
+        aScriptAttributes.push(&#39;data-spotx_content_width=&quot;{{form.mobileWidth}}&quot;&#39;);
+        aScriptAttributes.push(&#39;data-spotx_content_height=&quot;{{form.mobileHeight}}&quot;&#39;);
+    }
+    else
+    {
+        aScriptAttributes.push(&#39;data-spotx_content_width=&quot;{{form.width}}&quot;&#39;);
+        aScriptAttributes.push(&#39;data-spotx_content_height=&quot;{{form.height}}&quot;&#39;);
+        aScriptAttributes.push(&#39;data-spotx_unmute_on_mouse=&quot;1&quot;&#39;);
+    }
+    document.write(&#39;&lt;scr&#39; + &#39;ipt &#39; + aScriptAttributes.join(&quot; &quot;) + &#39;&gt;&lt;/scr&#39; + &#39;ipt&gt;&#39;);
+&lt;/script&gt;</span><span ng-hide="form.adUnit=='instream'">
+&lt;p&gt;This is a second paragraph of content.&lt;/p&gt;</span></code></pre>
+					<!--    End Code Snippet-->
+
+					  <div class="panel panel-default">
+                      <div class="panel-body ao">
+                        <h5><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Additional Options</h5>
+                        		<form class="form-inline">
+                        			<div class="form-group">
+
+					                <input type="text" class="form-control" placeholder=" Max Ad Duration (Seconds)" aria-describedby="basic-addon1" ng-model="form.adMaxDuration">
+
+					                <select class="form-control" ng-model="form.https">
+					                    <option value="1">Secure</option>
+					                    <option value="0">Non-Secure</option>
+					                </select>
+
+					                <input type="text" class="form-control" placeholder="Ad Volume (0-100)" aria-describedby="basic-addon1" ng-model="form.adVolume">
+
+					                </div>
+					                </form>
+					            </div>
+					            </div>
+
+					    <!--Begin Options Menu-->
+					    <p class="paramdivider"><strong>General</strong> Info</p>
+					    <div class="row eg">
+					        <div class="col-sm-4">
+					            <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="A unique 5-digit ID that is generated by the SpotX publisher platform when a channel is created.">Channel ID</span>
+					            <input type="text" class="form-control" placeholder="Channel ID" aria-describedby="basic-addon1" ng-model="form.channel">
+					        </div>
+					        <div class="col-sm-4">
+					            <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="The desired width of the video ad placement.">Content Width</span>
+					            <input type="text" class="form-control" placeholder="Content Width" aria-describedby="basic-addon1" ng-model="form.width">
+					        </div>
+					        <div class="col-sm-4">
+					            <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="The desired height of the video ad placement.">Content Height</span>
+					            <input type="text" class="form-control" placeholder="Content Height" aria-describedby="basic-addon1" ng-model="form.height">
+					        </div>
+					    </div>
+
+					    <div class="row eg">
+					        <div class="col-xs-4">
+					            <span class="input-group-addon" data-toggle="tooltip" title="Instream:  monetize video content with a pre-roll ad. In-Content: monetize text based content with an in-content ad.">Ad Unit Type</span>
+					            <select class="form-control" ng-model="form.adUnit">
+					                <option value="instream">In-Stream</option>
+					                <option value="incontent">In-Content</option>
+					            </select>
+					        </div>
+
+					        <div class="col-xs-4">
+					            <span class="input-group-addon" data-toggle="tooltip" title="Type of device targeted. For In-Content ad units, choose 'Responsive' to input separate sizes for desktop and mobile.">Device Type</span>
+					            <select class="form-control" ng-model="form.deviceType">
+					                <option value="desktop">Desktop</option>
+					                <option value="mobile">Mobile</option>
+					                <option value="responsive" ng-show="form.adUnit=='incontent'">Responsive</option>
+					            </select>
+					        </div>
+
+
+					        <div class="col-xs-4">
+					            <span class="input-group-addon" data-toggle="tooltip" title="Autoplay it! Defaults to true.">Autoplay</span>
+					            <select class="form-control" ng-model="form.autoplay">
+					                <option value=""></option>
+					                <option value="1">True</option>
+					                <option value="0">False</option>
+					            </select>
+					        </div>
+					    </div>
+
+					    <div ng-show="form.adUnit=='instream'">
+					        <p class="paramdivider"><strong>In-stream</strong> Options</p>
+					        <div class="row eg">
+					            <div class="col-sm-4">
+					                <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="ID of the container the video ad will be placed into.">Video Container ID</span>
+					                <input type="text" class="form-control" placeholder="Video Container ID" aria-describedby="basic-addon1" ng-model="form.contentContainerID">
+					            </div>
+
+					            <div class="col-sm-4">
+					                <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="The ID of the container that the companion ad will be placed into.">Video Banner ID</span>
+					                <input type="text" class="form-control" placeholder="Video Banner ID" aria-describedby="basic-addon1" ng-model="form.bannerContainerID">
+					            </div>
+
+					            <div class="col-sm-4">
+					                <span class="input-group-addon" data-toggle="tooltip" title="The type of content that will follow the ad. If using video, then the video ID, duration, description, URL, and title should also be provided.
+					">Content Type</span>
+					                <select class="form-control" ng-model="form.contentType">
+					                    <option value=""></option>
+					                    <option value="video">Video</option>
+					                    <option value="game">Game</option>
+					                    <option value="music">Music</option>
+					                    <option value="application">Application</option>
+					                    <option value="text">Text</option>
+					                    <option value="other">Other</option>
+					                </select>
+					            </div>
+
+					            <!--Content Video-->
+					            <div ng-show="form.contentType=='video'">
+					                <div class="col-sm-4">
+					                    <span class="input-group-addon" id="basic-addon1">Video Duration</span>
+					                    <input type="text" class="form-control" placeholder="Seconds" aria-describedby="basic-addon1" ng-model="form.vidDuration">
+					                </div>
+
+					                <div class="col-sm-4">
+					                    <span class="input-group-addon" id="basic-addon1">Video ID</span>
+					                    <input type="text" class="form-control" placeholder="Video ID" aria-describedby="basic-addon1" ng-model="form.vidID">
+					                </div>
+
+
+					                <div class="col-sm-4">
+					                    <span class="input-group-addon" id="basic-addon1">Video Description</span>
+					                    <input type="text" class="form-control" placeholder="Content Video Description" aria-describedby="basic-addon1" ng-model="form.vidDescription">
+					                </div>
+
+					                <div class="col-sm-4">
+					                    <span class="input-group-addon" id="basic-addon1">Video URL</span>
+					                    <input type="text" class="form-control" placeholder="URL of Content Video" aria-describedby="basic-addon1" ng-model="form.vidURL">
+					                </div>
+
+					                <div class="col-sm-4">
+					                    <span class="input-group-addon" id="basic-addon1">Video Title</span>
+					                    <input type="text" class="form-control" placeholder="Video Title" aria-describedby="basic-addon1" ng-model="form.vidTitle">
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+
+					    <div ng-show="form.adUnit=='incontent'">
+					        <p class="paramdivider"><strong>In-content</strong> Options</p>
+					        <div class="row eg">
+					            <div class="col-sm-4">
+					                <span class="input-group-addon" data-toggle="tooltip" title="Behavior of ad unit on ad completion. Collapses by default.">Ad End Behavior</span>
+					                <select class="form-control" ng-model="form.videoEnd">
+					                    <option value=""></option>
+					<!--                    <option value="none">None</option>-->
+					                    <option value="collapse">Collapse</option>
+					                    <option value="loop">Loop</option>
+					                    <option value="click_to_replay">Click-to-replay</option>
+					                </select>
+					            </div>
+
+					            <div class="col-sm-4" ng-show="form.deviceType=='desktop'">
+					                <span class="input-group-addon" data-toggle="tooltip" title="If true, the ad begins muted and unmutes when mouse is over the ad unit.">Unmute On Mouse</span>
+					                <select class="form-control" ng-model="form.unmuteOnMouse">
+					                    <option value=""></option>
+					                    <option value="0">False</option>
+					                    <option value="1">True</option>
+					                </select>
+					            </div>
+
+					            <div class="col-sm-4" ng-show="form.deviceType=='responsive'">
+					                <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="The desired width of ad placement on mobile devices. Used for 'Responsive' device type.">Mobile Width</span>
+					                <input type="text" class="form-control" placeholder="Mobile Width" aria-describedby="basic-addon1" ng-model="form.mobileWidth">
+					            </div>
+					            <div class="col-sm-4" ng-show="form.deviceType=='responsive'">
+					                <span class="input-group-addon" id="basic-addon1" data-toggle="tooltip" title="The desired height of ad placement on mobile devices. Used for 'Responsive' device type.">Mobile Height</span>
+					                <input type="text" class="form-control" placeholder="Mobile Height" aria-describedby="basic-addon1" ng-model="form.mobileHeight">
+					            </div>
+					        </div>
+					    </div>
+					</div>
+
+                <!-- TAG-BASED INTEGRATION BUILDER -->
+
+                <div class="tagbasedview" ng-show="platformSelect !== false && macrovars[platformSelect].name !== 'Brightcove' && platformSelect !== 'Ooyala' && macrovars[platformSelect].name !== 'AppleTV'">
+                    <h2 class="text-center">Place the following code into <span>{{macros.name}}</span></h2>
+                    <pre class="pre-scrollable" id="snippet">
+<span>{{callProtocol}}</span>://search.spotxchange.com/<span>{{maMRAID && 'mraid' || 'vast'}}</span>/2.0/79391?<span ng-show="maMRAID && mraidPF == '1'">prefetch=1</span><span ng-show="maMRAID && mraidPF == '0'">autoinit={{mraidAI}}&autoplay=1</span><span ng-show="!maMRAID">{{VPAID}}</span><span ng-show="deviceType !== 'mobileapp'">&amp;content_page_url=<span>{{macros.contentpageurl}}</span></span><span ng-show="param.cb || deviceType == 'desktop' || deviceType == 'mobileweb'" class="optionalparam">&amp;cb=<span>{{macros.cb}}</span></span><span ng-show="deviceType !== 'mobileapp' && deviceType !== 'ctv'">&amp;player_width={{macros.playerwidth}}&amp;player_height={{macros.playerheight}}</span><span ng-show="callOrigin == 'serverside'">&amp;device[ua]={{macros.ua}}&amp;ip_addr={{macros.ipaddr}}</span><span ng-show="deviceType == 'mobileapp' || deviceType == 'ctv'">&amp;app[name]={{macros.appname}}</span><span ng-show="deviceType == 'mobileapp'">&amp;app[domain]={{macros.appdomain}}&amp;app[bundle]={{macros.appbundleid}}&amp;device[ifa]={{macros.ifa}}</span><span ng-show="param.latlon" class="optionalparam">&amp;device[geo][lat]={{macros.lat}}&amp;device[geo][lon]={{macros.lon}}</span><span ng-show="param.dnt" class="optionalparam">&amp;device[dnt]={{macros.dnt}}</span></pre>
+                    <div ng-show="macros.notes !== false" class="alert alert-info" role="alert">
+                      <strong>For {{macros.name}} users:</strong> {{macros.notes}}
+                    </div>
+                    <div class="alert alert-danger" role="alert" ng-show="vpaidCheck()">Integrations with SpotX need to be VPAID compliant, please speak to your SpotX representative</div>
+                    <div class="panel panel-default">
+                      <div class="panel-body ao">
+                        <form class="form-inline">
+                        <h5><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Additional Options</h5>
+                         <div class="form-group">
+                        <select class="form-control" ng-model='callProtocol'>
+                          <option value="http">Non-secure</option>
+                          <option value="https">Secure</option>
+                        </select>
+                        <select class="form-control" ng-model='callOrigin' ng-show="deviceType !== 'ctv'">
+                          <option value="clientside">Client-side</option>
+                          <option value="serverside">Server-side</option>
+                        </select>
+                        <select class="form-control" ng-model='VPAID' ng-show="(VPAID == 'VPAID=0' || VPAID == 'VPI=MP4' || VPAID == 'VPI=WEBM') && deviceType !== 'ctv' && deviceType !== 'mobileapp'">
+                          <option value="VPAID=0">MP4 and WebM</option>
+                          <option value="VPI=MP4">MP4 Only</option>
+                          <option value="VPI=WEBM">WebM Only</option>
+                        </select>
+                        <select class="form-control" ng-model='mraidAI' ng-show="maMRAID && mraidPF == '0'">
+                          <option value="1">Autoinit</option>
+                          <option value="0">No Autoinit</option>
+                        </select>
+                        <select class="form-control" ng-model='mraidPF' ng-show="maMRAID">
+                          <option value="1">Prefetch</option>
+                          <option value="0">No Prefetch</option>
+                        </select>
+                        </div>
+                        </form>
+                      </div>
+                    </div>
+                    <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                  <th>Required?</th>
+                                  <th>Parameter</th>
+                                  <th>Description</th>
+                                  <th>Example Value(s)</th>
+                                </tr>
+                              </thead>
+                              <tbody class="tscroll">
+                                <tr ng-show="deviceType == 'mobileapp' || deviceType == 'ctv'">
+                                  <th scope="row">YES</th>
+                                  <td>app[name]</td>
+                                  <td>Name of the app where ads are being played</td>
+                                  <td>Example App</td>
+                                </tr>
+                                <tr ng-show="deviceType == 'mobileapp'">
+                                  <th scope="row">YES</th>
+                                  <td>app[domain]</td>
+                                  <td>App, developer or publisher domain</td>
+                                  <td>exampleapps.com</td>
+                                </tr>
+                                <tr ng-show="deviceType == 'mobileapp'">
+                                  <th scope="row">YES</th>
+                                  <td>app[bundle]</td>
+                                  <td>App Bundle ID</td>
+                                  <td>com.exampleapps.example</td>
+                                </tr>
+                                <tr ng-show="deviceType == 'mobileapp'">
+                                  <th scope="row">YES</th>
+                                  <td>device[ifa]</td>
+                                  <td>Device Apple IDFA or Google Advertising ID (Clear Text/Unhashed)</td>
+                                  <td>38400000-8cf0-11bd-b23e-10b96e40000d</td>
+                                </tr>
+                                <tr ng-show="deviceType !== 'mobileapp'">
+                                  <th scope="row">YES</th>
+                                  <td>content_page_url</td>
+                                  <td>The URL of the page the ad is played on</td>
+                                  <td>http%3A%2F%2Fwww.example.com%2Fvideos%2Fexample</td>
+                                </tr>
+                                <tr ng-show="!maMRAID">
+                                  <th scope="row">YES</th>
+                                  <td><span ng-show="deviceType !== 'ctv'">VPAID</span><span ng-show="deviceType == 'ctv'">VPI</span></td>
+                                  <td>Specifies the type of creative we return</td>
+                                  <td><span ng-show="deviceType !== 'ctv'"><code>1</code> or <code>JS</code></span><span ng-show="deviceType == 'ctv'"><code>MP4</code></span></td>
+                                </tr>
+                                <tr ng-show="deviceType !== 'mobileapp' && deviceType !== 'ctv'">
+                                  <th scope="row">YES</th>
+                                  <td>player_width</td>
+                                  <td>Width, in pixels, of the player in which the ad is played</td>
+                                  <td>600</td>
+                                </tr>
+                                <tr ng-show="deviceType !== 'mobileapp' && deviceType !== 'ctv'">
+                                  <th scope="row">YES</th>
+                                  <td>player_height</td>
+                                  <td>Height, in pixels, of the player in which the ad is played</td>
+                                  <td>400</td>
+                                </tr>
+                                <tr ng-show="deviceType !== 'mobileapp' && deviceType !== 'ctv'">
+                                  <th scope="row">YES</th>
+                                  <td>cb</td>
+                                  <td>Cachebuster; should be defined as a random value or timestamp</td>
+                                  <td>67832734</td>
+                                </tr>
+                                <tr class="paramdivider" ng-show="deviceType !== 'desktop'">
+                                <td colspan="4" class="paramdivider"><strong>ADDITIONAL PARAMETERS</strong> - Click to add or remove from your tag</td>
+                                </tr>
+                                <tr ng-show="deviceType == 'mobileapp' || deviceType == 'ctv'" ng-class="{true: 'paramselect', false: ''}[param.cb]" ng-click="param.cb = !param.cb">
+                                  <th scope="row">NO</th>
+                                  <td>cb</td>
+                                  <td>Cachebuster; should be defined as a random value or timestamp</td>
+                                  <td>67832734</td>
+                                </tr>
+                                <tr ng-class="{true: 'paramselect', false: ''}[param.latlon]" ng-click="param.latlon = !param.latlon" ng-show="deviceType == 'mobileapp' || deviceType =='mobileweb'">
+                                  <th scope="row">NO</th>
+                                  <td>device[geo][lat] <strong>and</strong> device[geo][lon]</td>
+                                  <td>Latitude and Longitude of the user's device</td>
+                                  <td>-24.378528 <strong> and </strong> -128.325119</td>
+                                </tr>
+                                <tr ng-class="{true: 'paramselect', false: ''}[param.dnt]" ng-click="param.dnt = !param.dnt" ng-show="deviceType == 'mobileapp' || deviceType =='mobileweb' || deviceType == 'ctv'">
+                                  <th scope="row">NO</th>
+                                  <td>device[dnt]</td>
+                                  <td>Device 'Do Not Track' flag - binary value</td>
+                                  <td><code>1</code> or <code>0</code></td>
+                                </tr>
+                                </tbody>
+
+                    </table>
+                </div>
+                </div>
+
+		<div class="panel-footer">
+			<button type="button" class="btn btn-primary btn-lg" ng-click="resetOptions()"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></button>
+			<button type="button" class="btn btn-primary btn-lg" ng-show="statePos > '-1'" ng-click="stepBack()">Back</button>
+            <button id="btn" class="btn btn-primary btn-lg" data-clipboard-target="#snippet" ng-show="platformSelect !== false && macrovars[platformSelect].name !== 'Brightcove' && macrovars[platformSelect].name !== 'AppleTV'">Copy to Clipboard</button>
+            <div class="logofooter"><img src="img/SPOTX_logo_wht.png" height="46"></div>
+        </div>
+		</div>
+		</div>
+
+        <script src="js/angular.min.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/clipboard.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+		<!-- Firebase -->
+		<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+		<!-- AngularFire -->
+		<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+        <script>
+        	var btn = document.getElementById('btn');
+    		var clipboard = new Clipboard(btn);
+    	</script>
+		<script>
+			var app = angular.module('TagGen', ['firebase']);
+
+
+
+			app.controller('TagBuilder', function($scope, $firebaseArray) {
+
+			var ref = new Firebase("https://spotxtagbuilder.firebaseio.com/");
+			$scope.macrovars = $firebaseArray(ref);
+
+			$scope.resetOptions = function() {
+				  $scope.deviceType = false;
+				  $scope.paramsValid = false;
+				  $scope.ctvSelect = false;
+				  $scope.desktopSolution = false;
+				  $scope.desktopImplementation = false;
+				  $scope.desktopplayerSelect = false;
+				  $scope.desktopadserverSelect = false;
+				  $scope.desktopeasiType = false;
+				  $scope.mwSolution = false;
+				  $scope.mwImplementation = false;
+				  $scope.mwplayerSelect = false;
+				  $scope.mwadserverSelect = false;
+				  $scope.mweasiType = false;
+				  $scope.maSolution = false;
+				  $scope.maAPI = false;
+				  $scope.maMRAID = false;
+				  $scope.maplayerSelect = false;
+				  $scope.maadserverSelect = false;
+                  $scope.platformSelect = false;
+                  $scope.VPAID = false;
+                  $scope.callProtocol = "http";
+                  $scope.callOrigin = "clientside";
+                  $scope.easiType = false;
+                  $scope.param = false;
+                  $scope.mraidAI = "1";
+                  $scope.mraidPF = "0";
+                  $scope.statePos = -1;
+			}
+
+		    stateName = {
+        		desktop: "Desktop",
+        		mobileweb: "Mobile Web",
+        		mobileapp: "Mobile App",
+        		ctv: "Connected TV",
+        		ovp: "Existing Solution",
+        		easi: "EASI Player",
+        		direct: "Player Integration",
+        		adserver: "Ad-server Integration",
+        		yes: "VPAID 2.0",
+        		no: "No VPAID Support",
+        		instream: "In-stream",
+        		incontent: "In-Content",
+        		true: "MRAID",
+        		'VPAID=1': "VPAID 1.0",
+        		'VPAID=js': "VPAID 2.0",
+        		'VPAID=0': "No VPAID Support",
+        		'VPI=MP4': "No VPAID Support",
+        		'VPI=WEBM': "No VPAID Support",
+        		notS: "No MRAID Support",
+        		AppleTV: "Apple TV"
+        	};
+
+			$scope.resetOptions();
+            $scope.states = new Array();
+
+            $scope.stepBack = function() {
+            	if($scope.maMRAID == 'true') {
+            		$scope.platformSelect = false
+            	};
+            	if($scope.deviceType == 'ctv') {
+            		$scope.VPAID = false
+            	};
+            	this[$scope.states[$scope.statePos]] = false;
+            	this[$scope.states[$scope.statePos + 1]] = false;
+            	this[$scope.states[$scope.statePos + 2]] = false;
+            	this[$scope.states[$scope.statePos + 3]] = false;
+            	this[$scope.states[$scope.statePos + 4]] = false;
+				--$scope.statePos
+			}
+
+			$scope.incPos = function () {
+				 $scope.statePos++;
+			}
+
+			$scope.breadcrumbs = function (step) {
+				stepVal = this[step];
+				if(typeof stateName[stepVal] === 'undefined'){
+					return $scope.macrovars[$scope.platformSelect].name;
+				} else {
+					return stateName[stepVal];
+				};
+			}
+
+			$scope.bcRemove = function (position) {
+				staticPos = $scope.statePos - position;
+				for (i = 0; i <= staticPos; i++) {
+					$scope.stepBack();
+				};
+			}
+
+			$scope.vpaidCheck = function () {
+				if(($scope.VPAID == "VPAID=0" || $scope.VPAID == "VPI=MP4" || $scope.VPAID == "VPI=WEBM") && $scope.deviceType !== "ctv") {
+					return true
+				} else {
+					return false
+				};
+			}
+
+            $scope.macrosearch = function() {
+                if ($scope.platformSelect !== false) {
+                    $scope.macros = {
+                        contentpageurl: $scope.macrovars[$scope.platformSelect].contentpageurl,
+                        cb: $scope.macrovars[$scope.platformSelect].cb,
+                        playerwidth: $scope.macrovars[$scope.platformSelect].playerwidth,
+                        playerheight: $scope.macrovars[$scope.platformSelect].playerheight,
+                        name: $scope.macrovars[$scope.platformSelect].vanityName,
+                        ipaddr: $scope.macrovars[$scope.platformSelect].ipaddr,
+                        ua: $scope.macrovars[$scope.platformSelect].ua,
+                        appname: $scope.macrovars[$scope.platformSelect].appname,
+                        appdomain: $scope.macrovars[$scope.platformSelect].appdomain,
+                        appbundleid: $scope.macrovars[$scope.platformSelect].appbundleid,
+                        ifa: $scope.macrovars[$scope.platformSelect].ifa,
+                        lat: $scope.macrovars[$scope.platformSelect].lat,
+                        lon: $scope.macrovars[$scope.platformSelect].lon,
+                        dnt: $scope.macrovars[$scope.platformSelect].dnt,
+                        notes: $scope.macrovars[$scope.platformSelect].notes
+                    }
+                };
+            }
+
+
+
+            $scope.finalCrumb = function () {
+            	try {
+	            	if ($scope.platformSelect !== false && $scope.macrovars[$scope.platformSelect].name !== "Brightcove" && $scope.macrovars[$scope.platformSelect].name !== "AppleTV") {
+	            		return "Build your tag"
+	            	} else if ($scope.easiType !== false) {
+	            		return "Build your EASI code"
+	            	} else if ($scope.maSolution == "SDK" || $scope.maMRAID == "notS" || $scope.macrovars[$scope.platformSelect].name == "AppleTV") {
+	            		return "Use our SDK"
+	            	} else if ($scope.macrovars[$scope.platformSelect].name == "Brightcove") {
+	            		return "Download our plugin"
+	            	} else {
+	            		return "Please select"
+	            	}
+	            } catch(err) {
+	            	return "Please select"
+	            };
+            }
+           
+
+
+            // EASI Generator
+
+            $scope.form = {};
+
+            $scope.form.deviceType = "desktop";
+            $scope.form.channel = "85394";
+            $scope.form.contentContainerID = "spotxvideo";
+            $scope.form.bannerContainerID = "spotxbanner";
+            $scope.form.width = "450";
+            $scope.form.height = "370";
+            $scope.form.https = "0";
+
+            $scope.form.mobileWidth = "300";
+            $scope.form.mobileHeight = "250";
+
+//            $scope.form.autoplay = "0";
+            updateAttributes();
+
+            $scope.$watch('form', function() {
+                var attr;
+                updateAttributes();
+                for (attr in $scope.oShownAttrs)
+                {
+                    $scope.strAttributes += ' data-' + attr + '=' +
+                            (typeof $scope.oShownAttrs[attr] != 'undefined' ? '"' + $scope.oShownAttrs[attr] + '"' : '""');
+                }
+                if ($scope.form.adUnit === "instream")
+                {
+                    for (attr in $scope.oInstreamAttrs)
+                    {
+                        if ($scope.oInstreamAttrs[attr])
+                        {
+                            $scope.strAttributes += ' data-' + attr + '="' + $scope.oInstreamAttrs[attr] + '"';
+                        }
+                    }
+                }
+                else if ($scope.form.adUnit === "incontent")
+                {
+                    for (attr in $scope.oIncontentAttrs)
+                    {
+                        if ($scope.oIncontentAttrs[attr])
+                        {
+                            $scope.strAttributes += ' data-' + attr + '="' + $scope.oIncontentAttrs[attr] + '"';
+                        }
+                    }
+                }
+                for (attr in $scope.oOtherAttrs)
+                {
+                    if ($scope.oOtherAttrs[attr])
+                    {
+                        $scope.strAttributes += ' data-' + attr + '="' + $scope.oOtherAttrs[attr] + '"';
+                    }
+                }
+            }, true);
+			
+
+            function updateAttributes () {
+                $scope.strAttributes = "";
+                // If they have "responsive" selected but switch to 'instream' then change their deviceType
+                if ($scope.form.adUnit == 'instream' && $scope.form.deviceType == 'responsive')
+                {
+                    $scope.form.deviceType = 'desktop';
+                }
+                // If it's not already encoded, then encode it.
+                var encodedContentPageURL = $scope.form.contentPageURL;
+                if (decodeURIComponent($scope.form.contentPageURL) == $scope.form.contentPageURL)
+                {
+                    encodedContentPageURL = encodeURIComponent($scope.form.contentPageURL);
+                }
+
+                // Attributes that are always included
+                $scope.oShownAttrs = {
+                    "spotx_channel_id": $scope.form.channel,
+                    "spotx_ad_unit": $scope.form.adUnit,
+                    "spotx_ad_done_function": "myAdDoneFunction"
+                };
+
+                // In-Stream-specific attributes which aren't necessarily included
+                $scope.oInstreamAttrs = {
+                    "spotx_content_width": ($scope.form.deviceType !='responsive') ? $scope.form.width : "",
+                    "spotx_content_height": ($scope.form.deviceType !='responsive') ? $scope.form.height: "",
+                    "spotx_content_type": $scope.form.contentType,
+                    "spotx_vid_duration": $scope.form.vidDuration,
+                    "spotx_vid_id": $scope.form.vidID,
+                    "spotx_vid_description": $scope.form.vidDescription,
+                    "spotx_vid_url": $scope.form.vidURL,
+                    "spotx_vid_title": $scope.form.vidTitle,
+                    "spotx_content_container_id": $scope.form.contentContainerID,
+                    "spotx_banner_container_id": $scope.form.bannerContainerID,
+                    "spotx_ad_volume": $scope.form.adVolume,
+                    "spotx_autoplay": $scope.form.autoplay
+                };
+
+                // In-Content-specific attributes which aren't necessarily included
+                $scope.oIncontentAttrs = {
+                    "spotx_content_width": ($scope.form.deviceType !='responsive') ? $scope.form.width : "",
+                    "spotx_content_height": ($scope.form.deviceType !='responsive') ? $scope.form.height: "",
+                    "spotx_collapse": $scope.form.videoEnd === "collapse" ? "1" : "",
+                    "spotx_loop": $scope.form.videoEnd === "loop" ? "1" : "",
+                    "spotx_ad_volume": $scope.form.adVolume,
+                    "spotx_click_to_replay": $scope.form.videoEnd === "click_to_replay" ? "1" : "",
+                    "spotx_unmute_on_mouse": $scope.form.deviceType == 'mobile' ? "" : $scope.form.unmuteOnMouse,
+                    "spotx_ad_volume": $scope.form.deviceType == 'mobile' ? "0" : $scope.form.adVolume,
+                    // Autoplay should be true for mobile incontent unless otherwise specified
+                    "spotx_autoplay": (typeof $scope.form.autoplay !== 'undefined' && $scope.form.autoplay !== "") ?
+                        $scope.form.autoplay :
+                        ($scope.form.deviceType == 'mobile' ? "1" : "")
+                };
+
+                // Other Attributes
+                $scope.oOtherAttrs = {
+                    "spotx_ad_format": $scope.form.deviceType == 'mobile' ? "html5" : "",
+                    "spotx_ad_max_duration": $scope.form.adMaxDuration,
+                    "spotx_https": $scope.form.https,
+                    "spotx_content_page_url": encodedContentPageURL
+                };
+            }
+        });
+	</script>
+
+</body>
+</html>

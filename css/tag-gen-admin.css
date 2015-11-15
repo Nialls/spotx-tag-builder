@@ -1,0 +1,104 @@
+body { 
+	padding-top:50px;
+	min-width:1201px;
+}
+.panel-body.optioncontrols {
+	min-height: 350px;
+}
+h5 {float: left;}
+.img-rounded:hover {
+    opacity: 1;
+}
+.img-rounded {
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+}
+h3, h2{
+margin-bottom:55px;
+}
+.pre-scrollable {
+    padding-top:20px;
+    padding-bottom:15px;
+    height:100px;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+}
+p, div {
+    font-family: 'Montserrat', sans-serif;
+}
+.logofooter {
+    float: right;
+}
+
+.logout {
+    float: right;
+    position:absolute;
+    z-index: 10000;
+}
+.panel-footer {
+    background-color: #C9C9C9;
+}
+.list-group-item:hover {
+    background-color: #f5f5f5;
+}
+.ao {
+    background-color: #D8E6F2;
+}
+.tscroll {
+    overflow-y: scroll;
+    height: 250px;
+}
+.paramselect {
+    background-color: #D8E6F2 !important;
+    transition:all linear 0.5s;
+}
+.optionalparam {
+  -webkit-transition:0.5s linear all;
+  transition:0.5s linear all;
+  opacity:1;
+}
+tr {
+    transition:all linear 0.5s !important;
+}
+.optionalparam.ng-hide {
+  opacity:0;
+}
+.paramdivider {
+    height:25px !important;
+    background-color: #ffffff !important;
+    border-width: 0px !important;
+    color: #6a6a6a !important;
+}
+h4 {
+    margin-bottom:35px;
+    margin-left:40px;
+    margin-right:40px;
+}
+p {
+	margin-bottom:20px;
+	margin-top:20px;
+}
+.eg {
+	margin-bottom:10px;
+}
+.input-group-addon {
+	background-color: #ffffff !important;
+	border-width:0px;
+	font-weight: bold;
+}
+.epre {
+	height:250px;
+}
+
+.form-group.required .control-label:after {
+  content:"*";
+  color:red;
+}
+
+h6 { width:100%; text-align:center; border-bottom: 1px solid #000; line-height:0.1em; margin:10px 0 20px; } 
+h6 span { background:#fff; padding:0 10px; }
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}

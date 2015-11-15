@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" /> 
+        <link rel="icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" /> 
+
+		<link href="/css/bootstrap.min.css" rel="stylesheet" type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='/css/tag-gen-admin.css' rel='stylesheet' type='text/css'>
+
+		<title>Admin Panel - Tag Builder</title>
+	</head>
+
+	<body>
+
+        <!-- BEGIN CONTAINER -->
+
+		<div id="view" class="container" ng-app="tagAdmin" ng-controller="main">
+
+		<form class="form-horizontal" ng-hide="authData">
+		<fieldset>
+
+		<!-- Form Name -->
+		<legend>Login to admin panel</legend>
+
+		<!-- Password input-->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="Email">Email Address</label>
+		  <div class="col-md-4">
+		    <input id="Email" name="Email" ng-model="loginForm.user" type="text" placeholder="Enter email address here" class="form-control input-md" required="">
+		    
+		  </div>
+		</div>
+
+		<!-- Text input-->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="Pass">Password</label>  
+		  <div class="col-md-4">
+		  <input id="Pass" name="Pass" type="password" ng-model="loginForm.pass" placeholder="Enter password here" class="form-control input-md" required="">
+		    
+		  </div>
+		</div>
+
+		<!-- Button -->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="Login"></label>
+		  <div class="col-md-4">
+		    <button id="Login" name="Login" ng-click="login()" class="btn btn-default">Login</button>
+		  </div>
+		</div>
+
+		</fieldset>
+		</form>
+
+
+
+		<div style="display:hide;" id="changeSuccess" class="alert alert-success fade in" role="alert">
+		  <strong>Platform has been updated</strong> - the change you made was a success!
+		</div>
+		<div style="display:hide;" id="changeFailed" class="alert alert-danger fade in" role="alert">
+		  <strong>Update failed</strong> - please check that you've filled in the required fields
+		</div>
+		<div ng-show="authData" class="panel panel-default ngcloak" ngcloak>
+		<div class="panel-header">
+				<ul class="nav nav-tabs" role="tablist">
+				  <li role="presentation" class="active"><a href="#create" aria-controls="create" role="tab" data-toggle="tab">Add platform</a></li>
+				  <li role="presentation"><a href="#edit" aria-controls="edit" role="tab" data-toggle="tab">Edit existing platform</a></li>
+				  <li role="presentation"><a href="#remove" aria-controls="remove" role="tab" data-toggle="tab">Remove Platform</a></li>
+				</ul>
+		</div>
+
+		<div class="panel-body optioncontrols">
+			<div>
+			  <!-- Tab panes -->
+				<div class="tab-content">
+				  <div role="tabpanel" class="tab-pane fade in active" id="create">
+
+				  	<form class="form-horizontal">
+						<fieldset>
+
+						
+						<h3>Enter the details of the platform you wish to add here</h3>
+
+						<!-- Macro inputs -->
+						<h6><span>Required Fields</span></h6>
+
+						  <div class="form-group required">
+						  <label class="col-md-4 control-label" >Name</label>  
+						  <div class="col-md-6">
+						  <input required="true"  ng-model="createForm.name" name="createForm.name" type="text" placeholder="Platform Name" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						   <!-- Additional Notes -->
+
+						  	  <div class="form-group required">
+							  <label class="col-md-4 control-label" for="notesMacro">Additional notes?</label>
+							  <div class="col-md-4">
+							  <label class="radio-inline">
+								  <input type="radio" name="inlineRadioOptions" ng-model="createForm.notes" ng-click="createForm.notesEnabled = false" id="inlineRadio1" value="false" checked> Disabled
+								</label>
+								<label class="radio-inline">
+								  <input type="radio" name="inlineRadioOptions" ng-model="createForm.notesEnabled" id="inlineRadio2" value="true" ng-click="createForm.notes = ''"> Enabled
+								</label>
+							  </div>
+							  </div>
+
+						 <div class="form-group">
+						  <label class="col-md-4 control-label"></label>  
+						  <div class="col-md-6">
+						 <input id="notesMacro" name="notesM" ng-model="createForm.notes" ng-show="createForm.notesEnabled" type="text" placeholder="Additional Notes" class="form-control input-md">					    
+						  </div>
+						  </div>
+
+							  
+						  
+
+							<!-- Platform Type -->
+							  <div class="form-group required">
+							  <label class="col-md-4 control-label" for="typeMacro">Platform Type</label>
+							  <div class="col-md-4">
+							    <select required="true" id="typeM" name="typeM" ng-model="createForm.type" class="form-control">
+							      <option value="adserver">Ad Server</option>
+							      <option value="ovp">Player</option>
+							      <option value="ctv">CTV</option>
+							    </select>
+							  </div>
+							  </div>
+
+							  <h6><span>Standard Parameters</span></h6>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >URL/Referrer</label>  
+						  <div class="col-md-6">
+						  <input  name="contentpageurlMacro" ng-model="createForm.contentpageurl" type="text" placeholder="Referrer Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Cachebuster</label>  
+						  <div class="col-md-6">
+						  <input  name="cbMacro" ng-model="createForm.cb" type="text" placeholder="Cachebusting Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Player Width</label>  
+						  <div class="col-md-6">
+						  <input  name="playerwidthMacro" ng-model="createForm.playerwidth" type="text" placeholder="Width Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Player Height</label>  
+						  <div class="col-md-6">
+						  <input  name="playerheightMacro" ng-model="createForm.playerheight" type="text" placeholder="Height Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						 <h6><span><a data-toggle="collapse" href="#serverparams">Server-Side Parameters</a></span></h6>
+						 <div class="collapse" id="serverparams">
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >IP Address</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.ipaddr" type="text" placeholder="IP Address Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >User-agent String</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.ua" type="text" placeholder="User Agent Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+						  </div>
+
+						  <h6><span><a data-toggle="collapse" href="#mobileparams">Mobile-specific Parameters</a></span></h6>
+						  <div class="collapse" id="mobileparams">
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >App Name</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.appname" type="text" placeholder="App Name Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >App Domain</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.appdomain" type="text" placeholder="App Domain Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+  						  <div class="form-group">
+						  <label class="col-md-4 control-label" >App Bundle ID</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.appbundleid" type="text" placeholder="Bundle ID Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Device IFA (Cleartext)</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.ifa" type="text" placeholder="IFA Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Latitude</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.lat" type="text" placeholder="Latitude Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Longitude</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.lon" type="text" placeholder="Longitude Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+
+						  <div class="form-group">
+						  <label class="col-md-4 control-label" >Do Not Track</label>  
+						  <div class="col-md-6">
+						  <input ng-model="createForm.dnt" type="text" placeholder="DNT Macro" class="form-control input-md">						    
+						  </div>
+						  </div>
+						  </div>
+
+							  
+							  <div class="form-group">
+							  <div class="col-md-4"></div>
+							  <div class="col-md-6">
+							    <button type="button" class="btn btn-default btn-lg" ng-click="addPlatform()">Add platform</button>
+							  </div>
+							  </div>
+
+						</fieldset>
+						</form>
+
+
+				  </div>
+
+				  <div role="tabpanel" class="tab-pane fade" id="edit">
+					  <h3>Select a player/ad-server to edit</h3>
+
+					  <select class="form-control" ng-model='platformEdit' ng-change="formEdit()">
+					  <option ng-repeat="macrovar in macrovars | filter: { type: '!deleted' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					  </select>
+
+				  </div>
+
+				  <div role="tabpanel" class="tab-pane fade" id="remove">
+				  	<h3>Select a player/ad-server to remove</h3>
+
+				  	<div class="form-group">
+				  	<select class="form-control" ng-model='platformRemove'>
+					  <option ng-repeat="macrovar in macrovars | filter: { type: '!deleted' } | orderBy: 'name'" ng-value="macrovar.$id" ng-bind="macrovar.name"></option>
+					</select>
+					</div>
+					<button type="button" class="btn btn-danger btn-lg" ng-click="removePlatform(platformRemove)" onclick="scroll(0,0)">Delete platform</button>
+					
+				</div>
+			</div>
+		</div>
+		</div>
+
+		<div class="panel-footer" style="height: 70px">
+		<button type="button" class="btn btn-primary btn-lg" ng-click="logOut(authData.uid)">Logout</button>
+            <div class="logofooter"><img src="/img/SPOTX_logo_wht.png" height="46"></div>
+        </div>
+		</div>
+		</div>
+
+        <script src="/js/angular.min.js"></script>
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+		<!-- Firebase -->
+		<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+		<!-- AngularFire -->
+		<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+		<script>
+
+			var app = angular.module('tagAdmin', ['firebase']);
+
+			app.controller('main', function($scope, $firebaseArray, $firebaseAuth) {
+
+				$('#changeSuccess').hide();
+				$('#changeFailed').hide();
+				var ref = new Firebase("https://spotxtagbuilder.firebaseio.com/");
+				$scope.macrovars = $firebaseArray(ref);
+				auth = $firebaseAuth(ref);
+				$scope.auth = auth;
+				var intMacrovars = $firebaseArray(ref);
+				$scope.notesM = false;
+				$scope.notesEnabled = false;
+
+				$scope.login = function() {
+		  	      $scope.authData = null;
+		  	      $scope.error = null;
+
+            		ref.authWithPassword({
+            		  email    : $scope.loginForm.user,
+            		  password : $scope.loginForm.pass
+            		}, function(error, authData) {
+            		  if (error) {
+            		    console.log("Login Failed!", error);
+            		    $scope.loginForm = {};
+            		  } else {
+            		    console.log("Authenticated successfully with payload:", authData);
+            		    $scope.loginForm = {};
+            		  }
+            		})};
+
+            	$scope.auth.$onAuth(function(authData) {
+			      $scope.authData = authData;
+			    });
+
+				// add a new record to the list
+				$scope.addPlatform = function() {
+					try {
+					ref.child(intMacrovars.length).set({
+				    contentpageurl: (typeof $scope.createForm.contentpageurl == "undefined") ? "REPLACE_ME" : $scope.createForm.contentpageurl,
+	                cb: (typeof $scope.createForm.cb == "undefined") ? "REPLACE_ME" : $scope.createForm.cb,
+	                playerwidth: (typeof $scope.createForm.playerwidth == "undefined") ? "REPLACE_ME" : $scope.createForm.playerwidth,
+	                playerheight: (typeof $scope.createForm.playerheight == "undefined") ? "REPLACE_ME" : $scope.createForm.playerheight,
+	                name: $scope.createForm.name,
+	                vanityName: $scope.createForm.name,
+	                notes: ($scope.createForm.notes == 'false') ? false : $scope.createForm.notes,
+	                type: $scope.createForm.type,
+	                index: "",
+	                ipaddr: (typeof $scope.createForm.ipaddr == "undefined") ? "REPLACE_ME" : $scope.createForm.ipaddr,
+	                ua: (typeof $scope.createForm.ua == "undefined") ? "REPLACE_ME" : $scope.createForm.ua,
+	                appname: (typeof $scope.createForm.appname == "undefined") ? "REPLACE_ME" : $scope.createForm.appname,
+	                appdomain: (typeof $scope.createForm.appdomain == "undefined") ? "REPLACE_ME" : $scope.createForm.appdomain,
+	                appbundleid: (typeof $scope.createForm.appbundleid == "undefined") ? "REPLACE_ME" : $scope.createForm.appbundleid,
+	                ifa: (typeof $scope.createForm.ifa == "undefined") ? "REPLACE_ME" : $scope.createForm.ifa,
+	                lat: (typeof $scope.createForm.lat == "undefined") ? "REPLACE_ME" : $scope.createForm.lat,
+	                lon: (typeof $scope.createForm.lon == "undefined") ? "REPLACE_ME" : $scope.createForm.lon,
+	                dnt: (typeof $scope.createForm.dnt == "undefined") ? "REPLACE_ME" : $scope.createForm.dnt
+					});
+					$scope.createForm = {};
+					alertSuccess();
+					$scope.platformRemove = undefined;
+					} catch(err) {
+						alertFailed();
+					};
+
+				};
+
+				$scope.removePlatform = function(platform) {
+					var editVar = intMacrovars.$getRecord(platform);
+					editVar.type = "deleted";
+					intMacrovars.$save(editVar);
+				};
+
+				alertSuccess = function() {
+					var delay=4500;
+					$('#changeSuccess').fadeIn();
+					setTimeout(function(){
+					  $('#changeSuccess').fadeOut();
+					}, delay); 
+				}
+
+				alertFailed = function() {
+					var delay=4500;
+					$('#changeFailed').fadeIn();
+					setTimeout(function(){
+					  $('#changeFailed').fadeOut();
+					}, delay); 
+				}
+
+				 $scope.logOut = function(user) {
+				    ref.unauth();
+				    $scope.authData = null;
+				  };
+
+				$scope.editPlatform = function(platform) {
+				var editVar = intMacrovars.$getRecord(platform);
+				editVar.type = "deleted";
+				intMacrovar.$save(editVar);
+				};
+
+       		});
+	</script>
+
+</body>
+</html>
